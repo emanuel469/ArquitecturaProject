@@ -1015,16 +1015,17 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
             if(IRO[27:25] == 3'b001)
             begin
 
-            SIE <= ON;
+            M1S <= M1_SHIFTImm;
             M4S <= M4_IRO1;
             M3S <= M3_ALU;
             M5S <= M5_IRO;
             M7S <= M7_IRO;
+            SIE <= ON;
             IRE <= OFF;
             RFE <= ON;
-            M1S <= M1_SHIFTImm;
-       #10 $display("\nPA output after instruction: %b", RF.PA );
-             #10 $display("\nPB output after instruction: SI INPUT %b, SI SE %b, SI OUT %b, SI TEMP %b", SI.toShift , SI.SE, SI.shifted, SI.temp);
+
+            #10 $display("\nPA output after instruction: %b", RF.PA );
+            #10 $display("\nPB output after instruction: SI INPUT %b, SI SE %b, SI OUT %b, SI TEMP %b", SI.toShift , SI.SE, SI.shifted, SI.temp);
             #10 $display("\nALU output after instruction: %b", alu.result );
 
             end
@@ -1347,11 +1348,12 @@ end
 
 
 
-       //Branch and branch/link
+       //Branch and branch with link
        else if((IRO[27:25] == 3'b101)&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
            (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
             (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
        begin
+        //Branch
        if (IRO[24] == 0)
        begin
        M5S <= M5_F;
@@ -1364,7 +1366,7 @@ end
        RFE <= ON;
 
        end
-
+      //Branch with link 
        else if(IRO[24] == 1'b1)
        begin
        M5S <= M5_F;
@@ -1770,11 +1772,12 @@ end
 
 
 
-       //Branch and link
+       //Branch and branch with link
        else if((IRO[27:25] == 3'b101)&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
            (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
             (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
        begin
+       //Branch 
        if (IRO[24] == 0)
        begin
        M5S <= M5_F;
@@ -1783,7 +1786,7 @@ end
        MARE <= ON;
 
        end
-
+       // Branch with link
        else if(IRO[24] == 1)
        begin
        M4S <= M4_F;
