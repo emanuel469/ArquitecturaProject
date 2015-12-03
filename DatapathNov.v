@@ -97,7 +97,7 @@ module Datapath();
 
                       branch_sign_extension BS(BSO, IRO[23:0], BSE);
 
-                    bit_extension BE (BEO, IRO[11:0], BITE);
+                      bit_extension BE (BEO, IRO[11:0], BITE);
                         /* Instanciando de memoria (hay que verificar que las entradas estan puestan en el lugar adecuado)*/
                         memory_256 memory256 (MEMO, MFC, MDRO, MARO, VS, RW, MEME, MEMS);
                         //module memory_256 (VALOUT, MFC, VALIN, ADDRESS, VALSIZE, RW, MEME, VALSIGN);
@@ -994,7 +994,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
         end
 
-       S4: begin //Pass MDR value into IR (completes fetch)
+         S4: begin //Pass MDR value into IR (completes fetch)
          $display("\nState 4: Load from Memory to IR, time:",$time);
         IRE <= ON;
 
@@ -1056,7 +1056,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
        begin
            if(IRO[27:25] == 3'b010)//Immeadiate offset
            begin
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub with update
+           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub update
            BITE <= ON; //Bit Extension for Immediate Value
            M5S <= M5_IRO; //Selects RN from IR
            M1S <= M1_BITO; //Select Bit Extension Output to Enter ALU
@@ -1072,8 +1072,8 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            BITE <= ON;
            M5S <= M5_IRO;
            M1S <= M1_BITO;
-           RFE <= ON;
            M7S <= M7_ADD;
+           RFE <= ON;
            MARE <= ON;
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 0)begin//Load Pre sub no-update
@@ -1086,11 +1086,11 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 1)begin//Load Pre add update
            BITE <= ON;
+           MARE <= ON;
+           RFE <= ON;
            M5S <= M5_IRO;
            M1S <= M1_BITO;
-           RFE <= ON;
            M7S <= M7_ADD;
-           MARE <= ON;
            M4S <= M4_IRO2;
            M3S <= M3_ALU;
 
@@ -1212,27 +1212,28 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M6S <= M6_IRO2;
            M5S <= M5_IRO;
            M1S <= M1_SHIFtReg;
-
            M7S <= M7_ADD;
            MARE <= ON;
+
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 0)begin//Load Pre sub no-update
            M6S <= M6_IRO2;
            M5S <= M5_IRO;
            M1S <= M1_SHIFtReg;
-
            M7S <= M7_SUB;
            MARE <= ON;
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 1)begin//Load Pre add update
+          
            M6S <= M6_IRO2;
            M5S <= M5_IRO;
            M1S <= M1_BITO;
-           RFE <= ON;
            M7S <= M7_ADD;
-           MARE <= ON;
            M4S <= M4_IRO1;
            M3S <= M3_ALU;
+           RFE <= ON;
+           MARE <= ON;
+           
            
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
@@ -1406,9 +1407,9 @@ end
 
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Load pre add no-update
+          
           BITE <= OFF;
            RW <= OFF;
-
            MEME <= !ON;
            M2S <= M2_MDR;
            MARE <= OFF;
@@ -1436,15 +1437,16 @@ end
 
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
-           BITE <= OFF;
+           
            M3S <= M3_ALU;
            M4S <= M4_IRO2;
            M2S <= M2_MDR;
-           RW = OFF;
-           MEME <= !ON;
            M1S <= M1_MDR;
-           RFE <= ON;
            M7S <= M7_SUB;
+           BITE <= OFF;
+           MEME <= !ON;
+           RFE <= ON;
+           RW = OFF;
            MDRE <= ON;
            MARE <= OFF;
 
@@ -1599,7 +1601,7 @@ end
 
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Load pre add no-update
-               RW = OFF;
+           RW = OFF;
            RFE <= OFF;
            MEME <= !ON;
            M2S <= M2_MDR;
@@ -1628,18 +1630,21 @@ end
 
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
-           MARE <= OFF;
+           
+
            M3S <= M3_ALU;
            M5S <= M5_IRO;
            M6S <= M6_IRO2;
-           M1S <= M1_SHIFtReg;
+           M1S <= M1_MDR;
            M4S <= M4_IRO2;
            M2S <= M2_MDR;
+            M7S <= M7_SUB;
+           MARE <= OFF;
            RW = OFF;
            MEME <= !ON;
-           M1S <= M1_MDR;
+           
            RFE <= ON;
-           M7S <= M7_SUB;
+          
            MDRE <= ON;
 
 
@@ -1812,11 +1817,11 @@ end
 
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Load pre add no-update
+           
            MDRE <= OFF;
            M4S <= M4_IRO1; //Pass RN Value to Register File C
            M3S <= M3_MDR; //Pass MDR value to Register File IN
            RFE <= ON;
-
            MEME <= !OFF;
 
 
@@ -1827,8 +1832,8 @@ end
            M4S <= M4_IRO1; //Pass RN Value to Register File C
            M3S <= M3_MDR; //Pass MDR value to Register File IN
            RFE <= ON;
-
            MEME <= !OFF;
+           
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 1)begin//Load Pre add update
            MDRE <= OFF;
@@ -1839,11 +1844,11 @@ end
            MEME <= !OFF;
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
-           MDRE <= OFF;
+           
            M4S <= M4_IRO1; //Pass RN Value to Register File C
            M3S <= M3_MDR; //Pass MDR value to Register File IN
            RFE <= ON;
-
+           MDRE <= OFF;
            MEME <= !OFF;
 
 
@@ -1949,6 +1954,8 @@ end
            MEME <= !OFF;
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 1)begin//Load Pre add update
+
+
 
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub no-update
