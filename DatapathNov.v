@@ -1096,7 +1096,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M3S <= M3_ALU;
 
            end
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
 
            M5S <= M5_IRO;
            M1S <= M1_BITO;
@@ -1105,18 +1105,18 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
 
            end
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Load post add no-update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 1 && IRO[21] == 0)begin//Load post add no-update
            M5S <= M5_IRO;
            M7S <= M7_MOV;
            MARE <= ON;
            end
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 0)begin//Load Post sub no-update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 0)begin//Load Post sub no-update
 
            M5S <= M5_IRO;
            M7S <= M7_MOV;
            MARE <= ON;
            end
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 1)begin//Load post add update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 1 && IRO[21] == 1)begin//Load post add update
 
            M5S <= M5_IRO;
            M7S <= M7_MOV;
@@ -1125,14 +1125,14 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
        ////////////////////////////////Store////////////////////////////////////////////////////
            if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Store pre sub update
            BITE <= ON;
+           RFE <= ON;
+           MARE <= ON;
            M5S <= M5_IRO;
            M1S <= M1_BITO;
-           RFE <= ON;
            M7S <= M7_SUB;
-           MARE <= ON;
            M4S <= M4_IRO2;
            M3S <= M3_ALU;
-           //I AM HERE
+           
            end
            if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Store pre add no-update
            BITE <= ON;
@@ -1161,7 +1161,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M3S <= M3_ALU;
 
            end
-           if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Store post sub update
+           if(IRO[20] == 0 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Store post sub update
            BITE <= ON;
            M5S <= M5_IRO;
            M1S <= M1_BITO;
@@ -1237,7 +1237,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            
            
            end
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
 
            M5S <= M5_IRO;
            M1S <= M1_SHIFtReg;
@@ -1247,7 +1247,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
 
            end
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Load post add no-update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 1 && IRO[21] == 0)begin//Load post add no-update
 
            M5S <= M5_IRO;
            M1S <= M1_SHIFtReg;
@@ -1255,7 +1255,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M7S <= M7_MOV;
            MARE <= ON;
            end
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 0)begin//Load Post sub no-update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 0)begin//Load Post sub no-update
 
            M5S <= M5_IRO;
            M1S <= M1_SHIFtReg;
@@ -1263,7 +1263,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M7S <= M7_MOV;
            MARE <= ON;
            end
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 1)begin//Load post add update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 1 && IRO[21] == 1)begin//Load post add update
 
            M5S <= M5_IRO;
            M7S <= M7_MOV;
@@ -1275,11 +1275,10 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M6S <= M6_IRO2;
            M5S <= M5_IRO;
            M1S <= M1_SHIFtReg;
-
-           M7S <= M7_SUB;
-           MARE <= ON;
            M4S <= M4_IRO2;
            M3S <= M3_ALU;
+           M7S <= M7_SUB;
+           MARE <= ON;
            RFE <= ON;
            end
            if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Store pre add no-update
@@ -1309,7 +1308,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M3S <= M3_ALU;
            RFE <= ON;
            end
-           if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Store post sub update
+           if(IRO[20] == 0 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Store post sub update
 
            M5S <= M5_IRO;
 
@@ -1361,10 +1360,10 @@ end
        M5S <= M5_F;
        M1S <= M1_Branch;
        M7S <= M7_ADD;
-       BSE <= ON;
+       
        M4S <= M4_F;
        M3S <= M3_ALU;
-
+       BSE <= ON;
        RFE <= ON;
 
        end
@@ -1458,55 +1457,59 @@ end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 1 && IRO[21] == 0)begin//Load post add no-update
            BITE <= OFF;
 
-           M2S <= M2_MDR;
+        
            RW = OFF;
            MEME <= !ON;
-           M1S <= M1_MDR;
-
-
            MDRE <= ON;
            MARE <= OFF;
+           M1S <= M1_MDR;
+           M2S <= M2_MDR;
+
+           
 
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 0)begin//Load Post sub no-update
            BITE <= OFF;
 
-           M2S <= M2_MDR;
+
            RW = OFF;
            MEME <= !ON;
-           M1S <= M1_MDR;
-
+           
 
            MDRE <= ON;
            MARE <= OFF;
+           M2S <= M2_MDR;
+           M1S <= M1_MDR;
 
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 1 && IRO[21] == 1)begin//Load post add update
-           BITE <= OFF;
            M3S <= M3_ALU;
            M4S <= M4_IRO2;
            M2S <= M2_MDR;
+           M7S <= M7_ADD;
+           M1S <= M1_MDR;   
+           BITE <= OFF;
+
            RW = OFF;
            MEME <= !ON;
-           M1S <= M1_MDR;
            RFE <= ON;
-           M7S <= M7_ADD;
+           
            MDRE <= ON;
            MARE <= OFF;
 
 
        end
        ////////////////////////////////Store////////////////////////////////////////////////////
-                   if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Store pre sub no-update
+         if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Store pre sub no-update
            MARE <= OFF;
            BITE <= OFF;
            SRE <= OFF;
-           M6S <= M6_IRO1; //Pass RD to RB
-           M1S <= M1_SHIFtReg;
-           M7S <= M7_MOVB;
            MDRE <= ON;
            RW <= ON;
            MEME <= !ON;
+           M6S <= M6_IRO1; //Pass RD to RB
+           M1S <= M1_SHIFtReg;
+           M7S <= M7_MOVB;
            M2S <= M2_ALU;
            end
            if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Store pre add no-update
@@ -1682,11 +1685,12 @@ end
            M6S <= M6_IRO2;
            M1S <= M1_SHIFtReg;
            M2S <= M2_MDR;
+            M7S <= M7_ADD;
            RW <= OFF;
            MEME <= !ON;
 
            RFE <= ON;
-           M7S <= M7_ADD;
+          
            MDRE <= ON;
            MARE <= OFF;
 
@@ -1695,10 +1699,10 @@ end
        ////////////////////////////////Store//////////////////////////////////////////////////// (currently S6 store)
            if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Store pre sub update
 
-           MARE <= OFF;
            M6S <= M6_IRO1;
            M7S <= M7_MOVB;
            M1S <= M1_SHIFtReg;
+           MARE <= OFF;
            MDRE <= ON;
            MEME <= !ON;
            RW <= ON;
@@ -1783,12 +1787,13 @@ end
        if (IRO[24] == 0)
        begin
        M5S <= M5_F;
-       BSE <= OFF;
        M7S <= M7_MOV;
        MARE <= ON;
+       BSE <= OFF;
 
        end
        // Branch with link
+
        else if(IRO[24] == 1)
        begin
        M4S <= M4_F;
@@ -1875,11 +1880,10 @@ end
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 1 && IRO[21] == 1)begin//Load post add update
            MDRE <= OFF;
-           M4S <= M4_IRO1; //Pass RN Value to Register File C
-           M3S <= M3_MDR; //Pass MDR value to Register File IN
            RFE <= ON;
-
            MEME <= !OFF;
+             M4S <= M4_IRO1; //Pass RN Value to Register File C
+           M3S <= M3_MDR; //Pass MDR value to Register File IN
 
        end
        ////////////////////////////////Store////////////////////////////////////////////////////
@@ -1935,7 +1939,7 @@ end
    end
        if(IRO[27:25] == 3'b010)//Register offset
            begin
-           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub no-update
+           if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub update
             MDRE <= OFF;
            M4S <= M4_IRO1; //Pass RN Value to Register File C
            M3S <= M3_MDR; //Pass MDR value to Register File IN
@@ -1950,7 +1954,7 @@ end
            MEME <= !OFF;
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 0)begin//Load Pre sub no-update
-            MDRE <= OFF;
+           MDRE <= OFF;
            M4S <= M4_IRO1; //Pass RN Value to Register File C
            M3S <= M3_MDR; //Pass MDR value to Register File IN
            RFE <= ON;
@@ -1961,7 +1965,7 @@ end
 
 
            end
-           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub no-update
+           if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
            MDRE <= OFF;
            M4S <= M4_IRO1; //Pass RN Value to Register File C
            M3S <= M3_MDR; //Pass MDR value to Register File IN
@@ -2080,22 +2084,22 @@ end
 end
 
 
-
+      ///Branch and Branch with link 
        else if((IRO[27:25] == 3'b101)&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
            (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
             (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
        begin
+       //branch 
        if (IRO[24] == 0)
        begin
        MARE <= OFF;
        RW <= OFF;
        MEME <= !ON;
-       M2S <= M2_MDR;
        MDRE <= ON;
-
+       M2S <= M2_MDR;
 
        end
-
+       //branch  with link 
        else if((IRO[24] == 1)&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
            (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
             (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
@@ -2110,10 +2114,12 @@ end
        end
 
         S8: begin
+        //Branch and Branch with link
        if((IRO[27:25] == 3'b101)&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
            (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
             (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
        begin
+       //branch 
        if (IRO[24] == 0)
        begin
        MDRE <= OFF;
@@ -2122,7 +2128,7 @@ end
        IRE <= ON;
 
        end
-
+       //branch link 
        else if((IRO[24] == 1)&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
            (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
             (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
@@ -2132,8 +2138,6 @@ end
        MEME <= !ON;
        M2S <= M2_MDR;
        M5S <= M5_F; ///////////////////E?
-       //M7S <= M7_MOV;
-       
        M4S <= M4_F;
        M3S <= M3_ALU;
 
@@ -2142,6 +2146,8 @@ end
         end
 
        S9: begin
+       //branch link 
+
        if((IRO[24] == 1)&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
            (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
             (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
