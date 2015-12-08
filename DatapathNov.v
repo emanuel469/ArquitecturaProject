@@ -108,10 +108,6 @@ module Datapath();
                     BSE, RW, MEMS, Clr, SRO, IRO, Clk, reset, MFC);
 
 
-// module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] M3S,  output reg M5S, M6S,
-//           output reg [2:0] M7S, output reg  Cin, RFE, IRE, MDRE, MARE, PCRE, MEME, SRE, SIE, RSE, BSE, RW, MEMS, Clr,
-//           input [3:0] SRO, input [31:0] IRO, input Clk, reset, mfc);
-
 
                         // Valin Valor de entrada
                         // address lugar donde esta guardado o se va a guardad
@@ -135,7 +131,7 @@ module Datapath();
 
 
 
-                        initial #1000 $finish;
+                        initial #2000 $finish;
 
 
 
@@ -480,7 +476,7 @@ module Datapath();
                         module decoder4_x16 (output reg [15:0] out_a, input [3:0] select, input enable);
                                         always @ (select,enable)
                         //This makes the decoder be an active low since it's the inverse of the entrance
-                                        if (enable)
+                                        if (~enable)
                                         begin
                                         //Depending of the input the output of the decoder is going to change
 
@@ -504,15 +500,12 @@ module Datapath();
 
                                         endcase
                                         end
-                                        //is not enabled
-                                        else
-                                        begin
-                                        out_a = 16'h0000;
-                                        end
+                                        
+                                    
 
                         endmodule
 
-                                                module Register4 (output reg [3:0] Q, input [3:0] D, input LE, Clr, Clk);
+                        module Register4 (output reg [3:0] Q, input [3:0] D, input LE, Clr, Clk);
                         always @ (posedge Clk, negedge Clr, LE)
 
                         if (Clr) Q <= 4'h0;
@@ -774,7 +767,7 @@ module Datapath();
                         always @ (Clk or posedge Clr)
                         if (Clr)fork
                         shifted <= 32'h00000000;
-                        #5 $display("THE SHIFTER RAN CLEAR");
+                       // #5 $display("THE SHIFTER RAN CLEAR");
                         join
 
                         //it's  disabled, so dont switch
@@ -782,7 +775,7 @@ module Datapath();
                         temp[31:0] = 32'h00000000;
                         #3 temp [31:0] = { 24'b0, toShift[7:0] };
                         #5 shifted [31:0] = temp [31:0];
-                        #8 $display("THE SHIFTER RAN SE == 0!!!! SHIFTED VALUE: %b", shifted);
+                       // #8 $display("THE SHIFTER RAN SE == 0!!!! SHIFTED VALUE: %b", shifted);
                         join
                         else fork
                         //32 bit immediate shifter operand
@@ -795,7 +788,7 @@ module Datapath();
                         #5 temp <=temp<<<(toShift[11:8]*2'b10);
                         //take of the result the bits form 0 to 11
                         #7 shifted = temp;
-                        #9 $display ("THE SHIFTER RAN SE == 1!!!! SHIFTER VALUE: %b", shifted);
+                       // #9 $display ("THE SHIFTER RAN SE == 1!!!! SHIFTER VALUE: %b", shifted);
 
                         //end
 
@@ -831,8 +824,8 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
         parameter M4_E= 2'b00;
         parameter M4_F= 2'b01;
-        parameter M4_IRO2=2'b10;
-        parameter M4_IRO1= 2'b11;
+        parameter M4_IRO2=2'b11;
+        parameter M4_IRO1= 2'b10;
         parameter M5_F= 1'b0;
         parameter M5_IRO= 1'b1;
         parameter M6_IRO2= 1'b0;
@@ -949,13 +942,34 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
        S1: begin //Sends PC to ALU and asks to move
            $display("\nState 1: PASSING PC to the MAR, time:",$time);
-
+           RFE <= OFF;
            M5S <= M5_F; //Mux five selects the port with hexadecimal value "F" as input to select register 15 "PC"
            M7S <= M7_MOV;//As the value of the PC exits port A mux seven is set to port with value for a mov so that the value of the PC is passed though without changes
-           MARE <= ON;//MAR is enabled to save the address that will be accessed on the memory
+           #21 MARE <= ON;//MAR is enabled to save the address that will be accessed on the memory
 
+       $display("\nRegister 0: %b",RF.R0.Q);
        $display("\nRegister 1: %b",RF.R1.Q);
+       $display("\nRegister 2: %b",RF.R2.Q);
+       $display("\nRegister 3: %b",RF.R3.Q);
+       $display("\nRegister 4: %b",RF.R4.Q);
+       $display("\nRegister 5: %b",RF.R5.Q);
+       $display("\nRegister 6: %b",RF.R6.Q);
+       $display("\nRegister 7: %b",RF.R7.Q);
+       $display("\nRegister 8: %b",RF.R8.Q);
+       $display("\nRegister 9: %b",RF.R9.Q);
+       $display("\nRegister 10: %b",RF.R10.Q);
+       $display("\nRegister 11: %b",RF.R11.Q);
+       $display("\nRegister 12: %b",RF.R12.Q);
+       $display("\nRegister 13: %b",RF.R13.Q);
+       $display("\nRegister 14: %b",RF.R14.Q);
+       $display("\nRegister 15: %b",RF.R15.Q);
+              $display("\nClr: %b",RF.R1.Clr);
+                     $display("\nRegister 15: %b",RF.R1.LE);
 
+
+
+       
+       
 
 
          end
@@ -1006,10 +1020,9 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
        $display("\nState 5: Decoding the instruction, time:",$time);
 
-
-       if((IRO[27:25] == 3'b000 || IRO[27:25] == 3'b001) && ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
-           (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
-            (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
+       $display("\n MDR: %b", MDR.Q);
+       $display("\n IRO: %b", IRO);
+       if((IRO[27:25] == 3'b000 || IRO[27:25] == 3'b001))
         begin
             //Data Processing immediate shift
             if(IRO[27:25] == 3'b001)
@@ -1023,10 +1036,22 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
             SIE <= ON;
             IRE <= OFF;
             RFE <= ON;
+            #21 RFE <= OFF;
+            #50M4S <= 4'b101;
 
-            #10 $display("\nPA output after instruction: %b", RF.PA );
-            #10 $display("\nPB output after instruction: SI INPUT %b, SI SE %b, SI OUT %b, SI TEMP %b", SI.toShift , SI.SE, SI.shifted, SI.temp);
+            //#10 $display("\nPA output after instruction: %b", RF.PA );
+            //#10 $display("\nPB output after instruction: SI INPUT %b, SI SE %b, SI OUT %b, SI TEMP %b", SI.toShift , SI.SE, SI.shifted, SI.temp);
             #10 $display("\nALU output after instruction: %b", alu.result );
+             #10 $display("\nRegister R1: %b, %b", RF.R1.D, RF.R1.Q );
+             $display("\nClr: %b",RF.R1.Clr);
+                     $display("\nRegister 0: %b",RF.R0.LE);
+            //$display("\nRegister 14: %b",RF.R.LE);
+        $display("\nMux 4: %b",M4.Y);
+        //$display("\n: %b",RF.RC);
+        $display("\nPA: %b",RF.PA);
+        $display("\nPB: %b",RF.PB);
+        $display("\nDecoder output: %b",RF.DO);
+
 
             end
             //Data Processing Register
@@ -1042,18 +1067,17 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
             IRE <= OFF;
             RSE <= ON;
             SRE <= ON;
-    #10 $display("\nALU output after instruction: %b", alu.result );
+           //#10 $display("\nALU output after instruction: %b", alu.result );
             end
 
 
 
        end
        // Load and store (MAR WITH UPDATE OR NO UPDATE )
-       else if((IRO[27:25] == 3'b010 || IRO[27:25] == 3'b011 )&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
-           (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
-            (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
+       else if((IRO[27:25] == 3'b010 || IRO[27:25] == 3'b011 ))
        begin
-           if(IRO[27:25] == 3'b010)//Immeadiate offset
+       $display ("Hello");
+        if(IRO[27:25] == 3'b010)//Immeadiate offset
            begin
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub update
            BITE <= ON; //Bit Extension for Immediate Value
@@ -1193,7 +1217,9 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
            end
    end
-       if(IRO[27:25] == 3'b010)//Register offset
+       if(IRO[27:25] == 3'b011)//Register offset
+       $display ("Hello2");
+
            begin
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub update
            M6S <= M6_IRO2;
@@ -1213,6 +1239,9 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M1S <= M1_SHIFtReg;
            M7S <= M7_ADD;
            MARE <= ON;
+           $display("ALU: %b", alu.result);
+           $display("MAR: %b", MAR.Q);
+           $display ("Hello3");
 
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 0)begin//Load Pre sub no-update
@@ -1221,6 +1250,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            M1S <= M1_SHIFtReg;
            M7S <= M7_SUB;
            MARE <= ON;
+
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 1)begin//Load Pre add update
           
@@ -1233,7 +1263,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
            RFE <= ON;
            MARE <= ON;
            
-           
+
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 1)begin//Load post sub update
 
@@ -1252,6 +1282,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
            M7S <= M7_MOV;
            MARE <= ON;
+
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 0 && IRO[21] == 0)begin//Load Post sub no-update
 
@@ -1260,6 +1291,7 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
            M7S <= M7_MOV;
            MARE <= ON;
+
            end
            if(IRO[20] == 1 && IRO[24] == 0 && IRO[23] == 1 && IRO[21] == 1)begin//Load post add update
 
@@ -1313,8 +1345,6 @@ module control_Unit(output reg [2:0] M1S, M4S, output reg M2S, output reg [1:0] 
 
            M7S <= M7_MOV;
            MARE <= ON;
-
-
 
 
            end
@@ -1383,14 +1413,12 @@ end
        end
 
           S6: begin
-       $display("\nState 7: Continue decoding the instruction, time:",$time);
+       $display("\nState 6: Continue decoding the instruction, time:",$time);
        //IF instruction is an arithmetic instruction
 
 
        // Load and store
-       if((IRO[27:25] == 3'b 010 || IRO[27:25] == 3'b011 )&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
-           (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
-            (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
+       if((IRO[27:25] == 3'b 010 || IRO[27:25] == 3'b011 ))
        begin
            if(IRO[27:25] == 3'b010)//Immeadiate offset
            begin
@@ -1591,7 +1619,7 @@ end
 
        end
    end
-       if(IRO[27:25] == 3'b010)//Register offset
+       if(IRO[27:25] == 3'b011)//Register offset
            begin
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub update
            RW <= OFF;
@@ -1804,13 +1832,16 @@ end
        end
 
           S7: begin
-       $display("\nState 8: Continue decoding the instruction, time:",$time);
+       $display("\nState 7: Continue decoding the instruction, time:",$time);
+
+
+
+
 
        // Load and store
-      if((IRO[27:25] == 3'b010 || IRO[27:25] == 3'b011 )&& ((cond == 4'b1000 || (cond == 4'b1001 && !Z) || (cond == 4'b0001 && Z) || (cond == 4'b1010 && !(Z || (N ^ V))) || (cond == 4'b0010 && (Z || (N ^ V))) ||
-           (cond == 4'b1011 && !(N ^ V)) || (cond == 4'b0011 && (N ^ V)) || (cond == 4'b1100 && !(C || Z)) || (cond == 4'b0100) && (C || Z) || (cond == 4'b1101 && !C) ||
-            (cond == 4'b0101 && C) || (cond == 4'b1110 && !N) || (cond == 4'b0110 && N) || (cond == 4'b1111 && !V) || (cond == 4'b0111 && V))))
+      if((IRO[27:25] == 3'b010 || IRO[27:25] == 3'b011 ))
        begin
+
            if(IRO[27:25] == 3'b010)//Immediate offset
            begin
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub update
@@ -1883,12 +1914,13 @@ end
              M4S <= M4_IRO1; //Pass RN Value to Register File C
            M3S <= M3_MDR; //Pass MDR value to Register File IN
 
-       end
+             end
        ////////////////////////////////Store////////////////////////////////////////////////////
            if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Store pre sub no-update
            MDRE <= OFF;
            MEME <= !OFF;
            end
+
            if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Store pre add no-update
            MDRE <= OFF;
            MEME <= !OFF;
@@ -1933,16 +1965,20 @@ end
            MDRE <= OFF;
            MEME <= !OFF;
 
-       end
+            end
    end
-       if(IRO[27:25] == 3'b010)//Register offset
+       if(IRO[27:25] == 3'b011)//Register offset
            begin
+                      $display("Help2");
+
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Load pre sub update
             MDRE <= OFF;
            M4S <= M4_IRO1; //Pass RN Value to Register File C
            M3S <= M3_MDR; //Pass MDR value to Register File IN
            RFE <= ON;
            MEME <= !OFF;
+           #21 RFE <= OFF;
+           $display("Help");
            end
            if(IRO[20] == 1 && IRO[24] == 1 && IRO[23] == 1 && IRO[21] == 0)begin//Load pre add no-update
             MDRE <= OFF;
@@ -1995,13 +2031,14 @@ end
        end
        ////////////////////////////////Store////////////////////////////////////////////////////
            if(IRO[20] == 0 && IRO[24] == 1 && IRO[23] == 0 && IRO[21] == 1)begin//Store pre sub no-update
-           M6S <= M6_IRO2;
-           MEME <= ON; //Actually OFF
-           M5S <= M5_IRO;
-           M1S <= M1_BITO;
+           
+           MEME <= !OFF; //Actually OFF
            RFE <= ON;
-           M7S <= M7_SUB;
            MARE <= ON;
+            M5S <= M5_IRO;
+           M1S <= M1_BITO;
+           M6S <= M6_IRO2;
+            M7S <= M7_SUB;
            M4S <= M4_IRO1;
            M3S <= M3_ALU;
            
